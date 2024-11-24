@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { PopulationManagementComponent } from "./population-management/population-management.component";
+import { BasicDataManagmentComponent } from "./basic-data-management/basic-data-management.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [BasicDataManagmentComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
