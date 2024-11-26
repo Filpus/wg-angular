@@ -1,0 +1,46 @@
+<div class="offer-container">
+  <h1>Złóż ofertę handlową</h1>
+
+  <div class="header">
+    <div [formGroup]="offerForm">
+        <label>
+          Państwo Docelowe:
+          <select formControlName="destinationCountry">
+            <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+          </select>
+        </label>
+        <button (click)="submitOffer()">Złóż ofertę</button>
+      </div>
+  </div>
+
+
+  <div class="columns-container">
+    <div class="column">
+      <h2>Oferowane zasoby</h2>
+      <button (click)="addOfferedResource()">Dodaj zasób</button>
+      <div *ngFor="let resource of offeredResources.controls; let i = index" class="resource-item" [formGroup]="getFormGroup(resource)" >
+        <!-- Rozwijana lista dla rodzaju zasobu -->
+        <select formControlName="type">
+          <option *ngFor="let type of resourceTypes" [value]="type">{{ type }}</option>
+        </select>
+        <!-- Pole ilości -->
+        <input type="number" formControlName="quantity" placeholder="Ilość">
+        <button (click)="removeResource(i, 'offered')">Usuń</button>
+      </div>
+    </div>
+
+    <div class="column">
+      <h2>Chciane zasoby</h2>
+      <button (click)="addRequestedResource()">Dodaj zasób</button>
+      <div *ngFor="let resource of requestedResources.controls; let i = index" class="resource-item" [formGroup]="getFormGroup(resource)">
+        <!-- Rozwijana lista dla rodzaju zasobu -->
+        <select formControlName="type">
+          <option *ngFor="let type of resourceTypes" [value]="type">{{ type }}</option>
+        </select>
+        <!-- Pole ilości -->
+        <input type="number" formControlName="quantity" placeholder="Ilość">
+        <button (click)="removeResource(i, 'requested')">Usuń</button>
+      </div>
+    </div>
+  </div>
+</div>

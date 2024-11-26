@@ -1,0 +1,149 @@
+/* Ogólny styl strony */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+}
+
+/* Nagłówek */
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  color: #4CAF50;
+}
+
+/* Formularz */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Sekcja z polami formularza */
+label {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Select dla Państwa Docelowego */
+select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+/* Przycisk "Złóż ofertę" */
+button {
+  padding: 12px 20px;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Kontener dla dwóch kolumn */
+.columns-container {
+  display: flex;
+  justify-content: space-between;
+  width: 98%;
+  margin-top: 20px;
+}
+
+/* Kolumny - Oferowane i Chciane zasoby */
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 48%; /* Każda kolumna ma szerokość 48% */
+}
+
+/* Tytuł sekcji w kolumnach */
+.column h2 {
+  
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+  align-items: center;
+}
+
+/* Elementy zasobów */
+.resource-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  width: 100%;
+}
+
+.resource-item input {
+  padding: 8px;
+  margin-left: 10px;
+  width: 60px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.resource-item select {
+  padding: 8px;
+  margin-left: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 150px;
+}
+
+.resource-item button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  background-color: #f44336;
+  color: white;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.resource-item button:hover {
+  background-color: #e53935;
+}
+
+/* Dodanie zasobu */
+.add-resource-button {
+  padding: 12px 20px;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-left: auto; /* Wycentrowanie przycisku */
+  margin-right: auto; /* Wycentrowanie przycisku */
+}
+
+.add-resource-button:hover {
+  background-color: #0056b3;
+}
+

@@ -57,4 +57,5 @@ export class SocialGroupsComponent {
   onAdd(): void {
     console.log('Dodawanie nowej grupy społecznej');
   }
+  
 }
