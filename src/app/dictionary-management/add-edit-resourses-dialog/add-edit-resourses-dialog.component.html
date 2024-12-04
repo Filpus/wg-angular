@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Dodawanie Zasobu</h2>
+<mat-dialog-content>
+  <form  [formGroup]="Resource">
+    <mat-form-field>
+      <mat-label>Nazwa</mat-label>
+      <input matInput [(ngModel)]="item.name" required formControlName="name"/>
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName = "isMain" >Główny zasób</mat-slide-toggle>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Anuluj</button>
+  <button mat-button (click)="onSubmit()">Zapisz</button>
+</mat-dialog-actions>

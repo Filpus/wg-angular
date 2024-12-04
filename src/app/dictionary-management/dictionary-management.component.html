@@ -1,0 +1,80 @@
+<div class="container">
+  <h1>Dictionary Management</h1>
+
+  <div class="columns">
+    <div class="column">
+      <h2>Social Groups</h2>
+      <button mat-button (click)="openAddDialog('group')">Add Social Group</button>
+      <table mat-table [dataSource]="groups">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="baseSatisfaction">
+          <th mat-header-cell *matHeaderCellDef>Base Satisfaction</th>
+          <td mat-cell *matCellDef="let element">{{ element.baseSatisfaction }}</td>
+        </ng-container>
+        <ng-container matColumnDef="recruitmentSize">
+          <th mat-header-cell *matHeaderCellDef>Recruitment Size</th>
+          <td mat-cell *matCellDef="let element">{{ element.recruitmentSize }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsGroups"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsGroups;" (click)="selectRow(row, 'group')" [ngStyle]="{'background-color': getRowColor(row)}"></tr>
+      </table>
+    </div>
+
+    <div class="column">
+      <h2>Religions</h2>
+      <button mat-button (click)="openAddDialog('religion')">Add Religion</button>
+      <table mat-table [dataSource]="religions">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsReligions"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsReligions;"  (click)="selectRow(row, 'religion')" [ngStyle]="{'background-color': getRowColor(row)}"></tr>
+      </table>
+    </div>
+
+    <div class="column">
+      <h2>Cultures</h2>
+      <button mat-button (click)="openAddDialog('culture')">Add Culture</button>
+      <table mat-table [dataSource]="cultures">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsCultures"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsCultures;"  (click)="selectRow(row,'culture')" [ngStyle]="{'background-color': getRowColor(row)}"></tr>
+      </table>
+    </div>
+
+    <div class="column">
+      <h2>Resources</h2>
+      <button mat-button (click)="openAddDialog('resource')">Add Resource</button>
+      <table mat-table [dataSource]="resources">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="mainResource">
+          <th mat-header-cell *matHeaderCellDef>Main Resource</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox [(ngModel)]="element.mainResource" disabled></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsResources"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsResources;" (click)="selectRow(row,'resource')" [ngStyle]="{'background-color': getRowColor(row)}" ></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button mat-button (click)="openEditDialog()" [disabled]="selectedItems === null">Edit</button>
+    <button mat-button (click)="openDeleteDialog()" [disabled]="selectedItems === null">Delete</button>
+  </div>
+</div>

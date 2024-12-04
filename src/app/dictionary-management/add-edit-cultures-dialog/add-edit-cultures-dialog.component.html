@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Dodawanie kultur</h2>
+<mat-dialog-content>
+  <mat-form-field>
+    Nazwa
+    <input matInput [(ngModel)]="item.name" required />
+  </mat-form-field>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onSubmit()">Submit</button>
+</mat-dialog-actions>
