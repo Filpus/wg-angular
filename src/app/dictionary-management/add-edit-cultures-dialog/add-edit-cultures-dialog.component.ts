@@ -8,15 +8,18 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialogActions } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms'; 
+import { MatInput } from '@angular/material/input';
+
 @Component({
   selector: 'app-add-edit-cultures-dialog',
-  imports:[MatDialogTitle, MatDialogContent, MatFormField, MatDialogActions, FormsModule],
+  imports:[MatDialogTitle, MatDialogContent, MatFormField, MatDialogActions, FormsModule, MatInput],
   templateUrl: './add-edit-cultures-dialog.component.html',
   styleUrl: './add-edit-cultures-dialog.component.css'
 })
 export class AddEditCulturesDialogComponent {
   
   item:any;
+  isEditing:boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<AddEditCulturesDialogComponent>,
@@ -25,9 +28,10 @@ export class AddEditCulturesDialogComponent {
     // Przygotowanie danych dla dialogu
 
     if (data.item === null){
-      this.item = {name: ""};
+      this.item ={id: 0, name: ""};
     } else {
-      this.item = {name: data.item.name}
+      this.item = {id: data.item.id,name: data.item.name}
+      this.isEditing = true;
     }
 
     
