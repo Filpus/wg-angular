@@ -3,8 +3,11 @@ import { FormBuilder, FormArray, FormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms'; // Import tego modułu
 import { NgFor } from '@angular/common';
 import { AbstractControl } from '@angular/forms';
-
-
+import { OfferService } from './offer.service';
+import { Observable } from 'rxjs';
+import { Nation, OfferedResource, OwnedResource, WantedResource, TradeAgreement,  } from './model';
+import { Resource } from '../dictionary-management/model';
+import { DictionaryService } from '../dictionary-management/dictionary.service';
 @Component({
   selector: 'app-offer',
   templateUrl: './offer.component.html',
@@ -16,11 +19,13 @@ import { AbstractControl } from '@angular/forms';
 
 })
 export class OfferComponent {
-  offerForm: FormGroup;
-  countries = ['Polska', 'Niemcy', 'Francja', 'Hiszpania'];
-  resourceTypes = ['Produkt A', 'Produkt B', 'Usługa C', 'Usługa D'];
 
-  constructor(private fb: FormBuilder) {
+  offerForm: FormGroup;
+  countries = new Observable<Nation[]>
+  resourceTypes = new Observable<Resource[]>
+  ownedResource = new Observable<OwnedResource[]>
+  nationId = 5
+  constructor(private offerService: OfferService, private dictionaryService: DictionaryService ,private fb: FormBuilder) {
     this.offerForm = this.fb.group({
       destinationCountry: [''],
       offeredResources: this.fb.array([]),
@@ -28,6 +33,11 @@ export class OfferComponent {
     });
   }
 
+  ngOnInit(){
+    this.resourceTypes = this.dictionaryService.getResources()
+    this.countries = this.offerService.getAllNations()
+    this.ownedResource = this.offerService.getOwnedResourceById(this.nationId)
+  }
   get offeredResources(): FormArray {
     return this.offerForm.get('offeredResources') as FormArray;
   }
