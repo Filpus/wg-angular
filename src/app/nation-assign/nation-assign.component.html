@@ -2,6 +2,11 @@
   <h1 style=" text-align: center;"> Przypisanie graczy</h1>
 </div>
 
+<div style="text-align: center;" class="controls">
+  <button mat-raised-button color="accent" (click)="save()">Zapisz </button>
+  <button mat-raised-button (click)="exit()">Wyjdź</button>
+</div>
+
 <div class="container">
   <table mat-table [dataSource]="nations" matSort class="mat-elevation-z8">
     <!-- Kolumna z nazwą państwa -->

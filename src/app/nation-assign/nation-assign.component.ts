@@ -45,18 +45,10 @@ export class NationAssignComponent {
     );
   }
 
-  removeElement<T>(array: T[], value: T): T[] {
-    return array.filter(item => item !== value);
-  }
 
+  exit() { }
 
-  disjointPart<T>(list1: T[], list2: T[]): T[] {
-
-    const uniqueInList1 = list1.filter(item => !list2.includes(item));// Filtruj elementy, które są tylko w pierwszej liście    
-    const uniqueInList2 = list2.filter(item => !list1.includes(item)); // Filtruj elementy, które są tylko w drugiej liście
-    return [...uniqueInList1, ...uniqueInList2];  // Połącz obie części rozłączne
-  }
-
+  save() { }
   // Kolumny do wyświetlenia
   displayedColumns: string[] = ['nation', 'person'];
 }
