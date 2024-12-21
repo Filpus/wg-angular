@@ -6,6 +6,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSortModule } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+
+import { AddEditPopDialogComponent } from '../add-edit-pop-dialog/add-edit-pop-dialog.component';
+import { DeleteDialogComponent } from '../dictionary-management/delete-dialog/delete-dialog.component';
 
 
 export interface Population {
@@ -37,6 +41,8 @@ export class PopulationManagementComponent {
     { group: 'Grupa B', culture: 'Kultura B', religion: 'Religia B', location: 'Miasto Y', satisfaction: 70, count: 150 },
   ]);
   selectedPopulations: Population[] = [];
+  constructor(public dialog: MatDialog) { }
+
 
   toggleSelection(row: Population): void {
     const index = this.selectedPopulations.indexOf(row);
@@ -84,5 +90,51 @@ export class PopulationManagementComponent {
   addFilter(): void {
     console.log('Dodaj filtr');
   }
-  
+
+  openAddDialog(type: string) {
+    const dialogRef = this.dialog.open(AddEditPopDialogComponent, {
+      data: { item: null }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Add item logic here based on the column type
+        console.log('New item added:', result);
+      }
+    });
+
+  }
+
+
+  openEditDialog() {
+
+    const dialogRef = this.dialog.open(AddEditPopDialogComponent, {
+      data: { item: this.selectedPopulations }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Add item logic here based on the column type
+        console.log('New item added:', result);
+      }
+    });
+
+  }
+
+  openDeleteDialog() {
+    if (this.selectedPopulations.length > 0) {
+      const dialogRef = this.dialog.open(DeleteDialogComponent, {
+        data: { items: this.selectedPopulations }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          console.log('Items deleted');
+        }
+      });
+    }
+  }
+
+
+
 }
