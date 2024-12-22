@@ -11,7 +11,7 @@ export class OfferService {
   constructor(private http: HttpClient) {}
 
   getAllNations(): Observable<Nation[]> {
-    return this.http.get<Nation[]>(`${this.apiUrl}/Nation}`);
+    return this.http.get<Nation[]>(`${this.apiUrl}/Nation`);
   }
 
   getNationById(id: number): Observable<Nation> {
@@ -55,7 +55,7 @@ export class OfferService {
   //   return this.http.get<WantedResource>(`${this.apiUrl}/${id}`);
   // }
 
-  createWantedResource(resource: WantedResource): Observable<WantedResource> {
+  createWantedResources(resource: WantedResource[]): Observable<WantedResource> {
     return this.http.post<WantedResource>(`${this.apiUrl}/Trade/WantedResources`, resource);
   }
 
@@ -74,7 +74,7 @@ export class OfferService {
   //   return this.http.get<OfferedResource>(`${this.apiUrl}/${id}`);
   // }
 
-  createOfferedResource(resource: OfferedResource): Observable<OfferedResource> {
+  createOfferedResources(resource: OfferedResource[]): Observable<OfferedResource> {
     return this.http.post<OfferedResource>(`${this.apiUrl}/Trade/OfferedResources`, resource);
   }
 
