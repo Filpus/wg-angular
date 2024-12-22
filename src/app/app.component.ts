@@ -9,7 +9,7 @@ import { DictionaryManagementComponent } from './dictionary-management/dictionar
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [PopulationManagementComponent],
+  imports: [NationAssignComponent],
   styleUrl: './app.component.css',
 
 })

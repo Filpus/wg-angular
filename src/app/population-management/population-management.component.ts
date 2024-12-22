@@ -91,7 +91,7 @@ export class PopulationManagementComponent {
     console.log('Dodaj filtr');
   }
 
-  openAddDialog(type: string) {
+  openAddDialog() {
     const dialogRef = this.dialog.open(AddEditPopDialogComponent, {
       data: { item: null }
     });
