@@ -8,16 +8,17 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialogActions } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms'; 
+import { MatInput } from '@angular/material/input';
 
 @Component({
   selector: 'app-add-edit-groups-dialog',
-  imports:[MatDialogTitle, MatDialogContent, MatFormField, MatDialogActions, FormsModule],
+  imports:[MatInput,MatDialogTitle, MatDialogContent, MatFormField, MatDialogActions, FormsModule],
   templateUrl: './add-edit-groups-dialog.component.html',
   styleUrl: './add-edit-groups-dialog.component.css'
 })
 export class AddEditGroupsDialogComponent {
   item:any;
-
+  isEditing:boolean = false;
   constructor(
     public dialogRef: MatDialogRef<AddEditGroupsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -25,9 +26,10 @@ export class AddEditGroupsDialogComponent {
     // Przygotowanie danych dla dialogu
 
     if (data.item === null){
-      this.item = {name: "",mainResource: false};
+      this.item = {id: 0, name: "",baseSatisfaction: 0.50, recruitmentSize: 500};
     } else {
-      this.item = {name: data.item.name}
+      this.item = {id: data.item.id, baseSatisfaction: data.item.baseSatisfaction, recruitmentSize: data.item.recruitmentSize}
+      this.isEditing = true;
     }
 
     

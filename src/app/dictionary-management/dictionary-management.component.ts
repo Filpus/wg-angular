@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditCulturesDialogComponent } from './add-edit-cultures-dialog/add-edit-cultures-dialog.component';
 import { AddEditGroupsDialogComponent } from './add-edit-groups-dialog/add-edit-groups-dialog.component';
@@ -9,25 +9,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatTableDataSource } from '@angular/material/table';
-interface Group {
-  name: string;
-  baseSatisfaction: number;
-  recruitmentSize: number;
-}
+import { MatPaginator } from '@angular/material/paginator'; 
+import { DictionaryService } from './dictionary.service';
+import { Observable } from 'rxjs';
+import { Resource, Group, Religion, Culture } from './model';
 
-interface Religion {
-  name: string;
-}
-
-interface Culture {
-  name: string;
-}
-
-interface Resource {
-  name: string;
-  mainResource: boolean;
-}
 
 @Component({
   selector: 'app-dictionary-management',
@@ -35,27 +21,15 @@ interface Resource {
   templateUrl: './dictionary-management.component.html',
   styleUrls: ['./dictionary-management.component.css']
 })
-export class DictionaryManagementComponent {
-  groups = new MatTableDataSource<Group>([
-    { name: 'Group 1', baseSatisfaction: 80, recruitmentSize: 100 },
-    { name: 'Group 2', baseSatisfaction: 90, recruitmentSize: 150 }
-  ]);
+export class DictionaryManagementComponent implements OnInit {
+  resources = new Observable<Resource[]>();
+  groups = new Observable<Group[]>();
   
-  religions = new MatTableDataSource<Religion>([
-    { name: 'Religion 1' },
-    { name: 'Religion 2' }
-  ]);
+  religions =new Observable<Religion[]>();
   
-  cultures = new MatTableDataSource<Culture>([
-    { name: 'Culture 1' },
-    { name: 'Culture 2' }
-  ]);
+  cultures = new Observable<Culture[]>();
   
-  resources = new MatTableDataSource<Resource>([
-    { name: 'Resource 1', mainResource: true },
-    { name: 'Resource 2', mainResource: false }
-  ]);
-
+  
   displayedColumnsGroups: string[] = ['name', 'baseSatisfaction', 'recruitmentSize'];
   displayedColumnsReligions: string[] = ['name'];
   displayedColumnsCultures: string[] = ['name'];
@@ -63,88 +37,202 @@ export class DictionaryManagementComponent {
 
   selectedItems: any = null;
   type: string = "";
-  constructor(public dialog: MatDialog) {}
-
-  openAddDialog(type: string) {
+  constructor(private dictionaryService: DictionaryService, public dialog: MatDialog) {}
   
 
-    if(type === 'culture'){
-      const dialogRef = this.dialog.open(AddEditCulturesDialogComponent, {
-        data: { item: null}
-      });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          // Add item logic here based on the column type
-          console.log('New item added:', result);
-        }
-      });
-    }
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+  loadData(): void {
+    this.resources = this.dictionaryService.getResources();
+    this.groups = this.dictionaryService.getGroups();
+    this.cultures = this.dictionaryService.getCultures();
+    this.religions = this.dictionaryService.getReligions();
+    // Podobnie załaduj dane dla grup, religii, kultur
   }
 
 
+
+  openAddDialog(type: string) {
+    switch (type) {
+      case 'culture':
+        var dialogRef = this.dialog.open(AddEditCulturesDialogComponent, {
+          data: { item: null }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.addCultures([result]).subscribe(response =>{
+              console.log(`Kultura ${result} została dodana:`, response);
+            })
+            this.cultures = this.dictionaryService.getCultures();
+          }
+        })
+
+
+        break;
+      case 'religion':
+        var dialogRef = this.dialog.open(AddEditReligionsDialogComponent, {
+          data: { item: null }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.addReligions([result]).subscribe(response =>{
+              console.log(`Religia o ID ${result} został dodany:`, response);
+            })
+
+            this.religions = this.dictionaryService.getReligions();
+          }
+        })
+        break;
+      case 'group':
+        var dialogRef = this.dialog.open(AddEditGroupsDialogComponent, {
+          data: { item: null }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.addGroups([result]).subscribe(response =>{
+              console.log(`Grupa o ID ${result} został dodany:`, response);
+            })
+          }
+        })
+        this.groups = this.dictionaryService.getGroups();
+        break;
+      case 'resource':
+
+        var resourceDialogRef = this.dialog.open(AddEditResoursesDialogComponent, {
+          data: { item: null }
+        })
+        resourceDialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.addResources([result]).subscribe(response =>{
+              console.log(`Zasób o ID ${result} został dodany:`, response);
+            })
+            this.resources = this.dictionaryService.getResources();
+          }
+
+        })
+      
+        break;
+      default:
+        return;
+    }
+  
+
+  }
+  
   openEditDialog() {
-    if(this.type === 'culture'){
-      const dialogRef = this.dialog.open(AddEditCulturesDialogComponent, {
-        data: { item: this.selectedItems}
-      });
 
+    switch (this.type) {
+      case 'culture':
+        var dialogRef = this.dialog.open(AddEditCulturesDialogComponent, {
+          data: { item: this.selectedItems }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.updateCultures([result]).subscribe(response =>{
+              console.log(`Kultura o ID ${this.selectedItems.id} został edytowany:`, response);
+            })
+          }
+        })
+        break;
+      case 'religion':
+        var dialogRef = this.dialog.open(AddEditReligionsDialogComponent, {
+          data: { item: this.selectedItems }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.updateReligions([result]).subscribe(response =>{
+              console.log(`Religia o ID ${this.selectedItems.id} został edytowany:`, response);
+            })
+          }
+        })
+        break;
+      case 'group':
+        var dialogRef = this.dialog.open(AddEditGroupsDialogComponent, {
+          data: { item: this.selectedItems }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.updateResources([result]).subscribe(response =>{
+              console.log(`Grupa o ID ${this.selectedItems.id} został edytowany:`, response);
+            })
+          }
+        })
+        break;
+      case 'resource':
+
+        var resourceDialogRef = this.dialog.open(AddEditResoursesDialogComponent, {
+          data: this.selectedItems
+        })
+        resourceDialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.dictionaryService.updateResources([result]).subscribe(response =>{
+              console.log(`Zasób o ID ${this.selectedItems.id} został edytowany:`, response);
+            })
+          }
+        })
+      
+        break;
+      default:
+        return;
+    }
+  
+
+  }
+ 
+  
+  openDeleteDialog() {
+      const dialogRef = this.dialog.open(DeleteDialogComponent, {autoFocus: true});
+  
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          // Add item logic here based on the column type
-          console.log('New item added:', result);
+          switch (this.type) {
+            case 'culture':
+              this.dictionaryService.deleteCultures([this.selectedItems.id]).subscribe(response =>
+                {
+                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+                }
+              
+                
+              );
+              break;
+            case 'religion':
+              this.dictionaryService.deleteReligions([this.selectedItems.id]).subscribe(response =>
+                {
+                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+                }
+              );
+              break;
+            case 'group':
+              this.dictionaryService.deleteGroups([this.selectedItems.id]).subscribe(response =>
+                {
+                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+                }
+              );
+              break;
+            case 'resource':
+              this.dictionaryService.deleteResources([this.selectedItems.id]).subscribe(response =>
+                {
+                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+                }
+              );
+              break;
+            default:
+              return;
+          }
         }
       });
-    } else if (this.type === 'religion'){
-        const dialogRef = this.dialog.open(AddEditReligionsDialogComponent, {
-          data: { item: this.selectedItems}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            // Add item logic here based on the column type
-            console.log('New item added:', result);
-          }
-        });
-    } else if (this.type === 'group'){
-        const dialogRef = this.dialog.open(AddEditGroupsDialogComponent, {
-          data: { item: this.selectedItems}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            // Add item logic here based on the column type
-            console.log('New item added:', result);
-          }
-        });
-    }else if (this.type === 'resource'){
-        const dialogRef = this.dialog.open(AddEditResoursesDialogComponent, {
-          data: { item: this.selectedItems}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            // Add item logic here based on the column type
-            console.log('New item added:', result);
-          }
-        });
-    }
+    
   }
-
-  openDeleteDialog( ) {
-    if (this.selectedItems.length > 0) {
-      const dialogRef = this.dialog.open(DeleteDialogComponent, {
-        data: { items: this.selectedItems }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          console.log('Items deleted');
-        }
-      });
-    }
-  }
-
+  
   
   toggleSelection(item: any) {
     const index = this.selectedItems.indexOf(item);
