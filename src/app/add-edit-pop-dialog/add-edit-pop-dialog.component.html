@@ -1,1 +1,51 @@
-<p>add-edit-pop-dialog works!</p>
+<h2 mat-dialog-title>{{isEditing ? 'Edycja populacji' : 'Dodawanie populacji'}}</h2>
+<mat-dialog-content>
+
+  <mat-form-field appearance="fill">
+    <mat-select [(ngModel)]="item.socialGroup" placeholder=" Wybierz grupę społeczną">
+      <mat-option *ngFor="let group of groups" [value]="group">
+        {{ group.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-select [(ngModel)]="item.culture" placeholder="Wybierz kulturę">
+      <mat-option *ngFor="let culture of cultures" [value]="culture">
+        {{ culture.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-select [(ngModel)]="item.religion" placeholder="Wybierz religię">
+      <mat-option *ngFor="let religion of religions" [value]="religion">
+        {{ religion.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-select [(ngModel)]="item.localisation" placeholder="Wybierz lokalizację">
+      <mat-option *ngFor="let loc of localisations" [value]="loc">
+        {{ loc.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
+  <mat-form-field>
+    Zadowolenie
+    <input matInput [(ngModel)]="item.satisfaction" type="number" required />
+  </mat-form-field>
+
+  <mat-form-field>
+    Liczba populacji
+    <input matInput [(ngModel)]="item.count" type="number" required />
+  </mat-form-field>
+
+
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onSubmit()">Submit</button>
+  </mat-dialog-actions>

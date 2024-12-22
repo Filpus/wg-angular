@@ -10,16 +10,8 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { AddEditPopDialogComponent } from '../add-edit-pop-dialog/add-edit-pop-dialog.component';
 import { DeleteDialogComponent } from '../dictionary-management/delete-dialog/delete-dialog.component';
+import { cultures, religions, groups, localisations, Population } from '../dictionary-management/model';
 
-
-export interface Population {
-  group: string;
-  culture: string;
-  religion: string;
-  location: string;
-  satisfaction: number;
-  count: number;
-}
 
 @Component({
   selector: 'app-population-management',
@@ -35,16 +27,18 @@ export interface Population {
   styleUrls: ['./population-management.component.css'],
 })
 export class PopulationManagementComponent {
-  displayedColumns: string[] = ['select', 'group', 'culture', 'religion', 'location', 'satisfaction', 'count'];
+  displayedColumns: string[] = ['select', 'group', 'culture', 'religion', 'localisation', 'satisfaction', 'count'];
   dataSource = new MatTableDataSource<Population>([
-    { group: 'Grupa A', culture: 'Kultura A', religion: 'Religia A', location: 'Miasto X', satisfaction: 85, count: 100 },
-    { group: 'Grupa B', culture: 'Kultura B', religion: 'Religia B', location: 'Miasto Y', satisfaction: 70, count: 150 },
+    { id: 1, socialGroup: groups[0], culture: cultures[0], religion: religions[0], localisation: localisations[0], satisfaction: 75, count: 1000 },
+    { id: 2, socialGroup: groups[1], culture: cultures[1], religion: religions[1], localisation: localisations[1], satisfaction: 60, count: 500 },
+    { id: 3, socialGroup: groups[2], culture: cultures[2], religion: religions[2], localisation: localisations[2], satisfaction: 85, count: 200 }
   ]);
+
   selectedPopulations: Population[] = [];
   constructor(public dialog: MatDialog) { }
 
-
   toggleSelection(row: Population): void {
+    console.log(row)
     const index = this.selectedPopulations.indexOf(row);
     if (index === -1) {
       this.selectedPopulations.push(row);
@@ -98,7 +92,7 @@ export class PopulationManagementComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Add item logic here based on the column type
+        this.addPopulation();
         console.log('New item added:', result);
       }
     });
@@ -109,12 +103,12 @@ export class PopulationManagementComponent {
   openEditDialog() {
 
     const dialogRef = this.dialog.open(AddEditPopDialogComponent, {
-      data: { item: this.selectedPopulations }
+      data: { item: this.selectedPopulations[0] }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Add item logic here based on the column type
+        this.editPopulation();
         console.log('New item added:', result);
       }
     });
