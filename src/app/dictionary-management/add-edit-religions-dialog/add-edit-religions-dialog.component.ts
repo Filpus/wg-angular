@@ -8,14 +8,17 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialogActions } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms'; 
+import { MatInput } from '@angular/material/input';
+
 @Component({
   selector: 'app-add-edit-religions-dialog',
-  imports:[MatDialogTitle, MatDialogContent, MatFormField, MatDialogActions, FormsModule],
+  imports:[MatDialogTitle, MatDialogContent, MatFormField, MatDialogActions, FormsModule, MatInput],
   templateUrl: './add-edit-religions-dialog.component.html',
   styleUrl: './add-edit-religions-dialog.component.css'
 })
 export class AddEditReligionsDialogComponent {
   item:any;
+  isEditing: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<AddEditReligionsDialogComponent>,
@@ -24,9 +27,10 @@ export class AddEditReligionsDialogComponent {
     // Przygotowanie danych dla dialogu
 
     if (data.item === null){
-      this.item = {name: ""};
+      this.item = {id: 0, name: ""};
     } else {
-      this.item = {name: data.item.name}
+      this.item = {id: data.item.id,name: data.item.name}
+      this.isEditing = true;
     }
 
     
