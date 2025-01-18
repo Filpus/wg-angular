@@ -75,6 +75,8 @@ export class OfferComponent {
       type: ['', [Validators.required, this.validateUniqueResource.bind(this)]], // Typ zasobu
       quantity: [0, [Validators.min(0), (control : AbstractControl) => this.validateOfferedQuantity(control)]],
     });
+
+
   
     this.offeredResources.push(resourceGroup);
   }
@@ -115,7 +117,7 @@ export class OfferComponent {
     const ownedAmount = this.getOwnedAmount(resourceId);
   
     if (control) {
-      const quantityControl = control.get('quantity');
+      const quantityControl = control.get('amount');
       if (quantityControl) {
         // Walidacja ilości względem posiadanych zasobów
         if (quantityControl.value > ownedAmount) {
@@ -203,7 +205,7 @@ export class OfferComponent {
       return {
         resourceId: resourceTypeId,
         tradeAgreementId: tradeAgreementId,
-        quantity: quantity,
+        amount: quantity,
       };
     });
   

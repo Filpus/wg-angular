@@ -27,7 +27,7 @@ export interface Nation {
     id?: number; // Optional as Id can be null
     resourceId: number;
     tradeAgreementId: number;
-    quantity: number;
+    amount: number;
   }
   
   // TradeAgreement Model

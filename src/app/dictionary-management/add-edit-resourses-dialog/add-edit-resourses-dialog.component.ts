@@ -35,12 +35,12 @@ export class AddEditResoursesDialogComponent {
     if (data.item === null){
       this.item = {name: "",isMain: false};
     } else {
-      this.item = {name: data.item.name, isMain: data.item.isMain}
+      this.item = {name: data.name, isMain: data.isMain}
       this.isEditing = true;
     }
     this.resourceForm = new FormGroup({
-      name: new FormControl(data.item?.name || '', Validators.required),
-      isMain: new FormControl(data.item?.isMain || false)
+      name: new FormControl(data.name || '', Validators.required),
+      isMain: new FormControl(data.isMain || false)
     });
 
     

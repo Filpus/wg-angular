@@ -13,6 +13,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { DictionaryService } from './dictionary.service';
 import { Observable } from 'rxjs';
 import { Resource, Group, Religion, Culture } from './model';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { ErrorDialogComponent } from './confirmation-dialog/error-dialof.component';
 
 
 @Component({
@@ -30,7 +32,7 @@ export class DictionaryManagementComponent implements OnInit {
   cultures = new Observable<Culture[]>();
   
   
-  displayedColumnsGroups: string[] = ['name', 'baseSatisfaction', 'recruitmentSize'];
+  displayedColumnsGroups: string[] = ['name', 'baseHappiness', 'volunteers'];
   displayedColumnsReligions: string[] = ['name'];
   displayedColumnsCultures: string[] = ['name'];
   displayedColumnsResources: string[] = [ 'name', 'mainResource'];
@@ -64,9 +66,14 @@ export class DictionaryManagementComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.addCultures([result]).subscribe(response =>{
-              console.log(`Kultura ${result} została dodana:`, response);
-            })
+            this.dictionaryService.addCultures([result]).subscribe({
+              next: response => {
+                var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Kultura została poprawnie dodana"}});
+                },
+                error: error => {
+                var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania kultury: \n" + error.message}});
+              }
+              })
             this.cultures = this.dictionaryService.getCultures();
           }
         })
@@ -80,8 +87,13 @@ export class DictionaryManagementComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.addReligions([result]).subscribe(response =>{
-              console.log(`Religia o ID ${result} został dodany:`, response);
+            this.dictionaryService.addReligions([result]).subscribe({
+              next: response => {
+                var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Religia została poprawnie dodana"}});
+                },
+                error: error => {
+                var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania religii: \n" + error.message}});
+              }
             })
 
             this.religions = this.dictionaryService.getReligions();
@@ -95,8 +107,13 @@ export class DictionaryManagementComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.addGroups([result]).subscribe(response =>{
-              console.log(`Grupa o ID ${result} został dodany:`, response);
+            this.dictionaryService.addGroups([result]).subscribe({
+              next: response => {
+                var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Grupa została poprawnie dodana"}});
+                },
+                error: error => {
+                var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania grupy: \n" + error.message}});
+              }
             })
           }
         })
@@ -109,8 +126,13 @@ export class DictionaryManagementComponent implements OnInit {
         })
         resourceDialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.addResources([result]).subscribe(response =>{
-              console.log(`Zasób o ID ${result} został dodany:`, response);
+            this.dictionaryService.addResources([result]).subscribe({
+              next: response => {
+                var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Zasób został poprawnie dodany"}});
+              },
+              error: error => {
+                var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania zasobu: \n" + error.message}});
+              }
             })
             this.resources = this.dictionaryService.getResources();
           }
@@ -135,10 +157,16 @@ export class DictionaryManagementComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.updateCultures([result]).subscribe(response =>{
-              console.log(`Kultura o ID ${this.selectedItems.id} został edytowany:`, response);
+            this.dictionaryService.updateCultures([result]).subscribe({
+              next: response => {
+              var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Kultura o ID ${this.selectedItems.id} została edytowana`}});
+              },
+              error: error => {
+              var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji kultury o ID ${this.selectedItems.id}`}});
+            }
             })
           }
+          this.dictionaryService.getCultures()
         })
         break;
       case 'religion':
@@ -148,10 +176,16 @@ export class DictionaryManagementComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.updateReligions([result]).subscribe(response =>{
-              console.log(`Religia o ID ${this.selectedItems.id} został edytowany:`, response);
+            this.dictionaryService.updateReligions([result]).subscribe({
+              next: response => {
+              var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Religia o ID ${this.selectedItems.id} została edytowana`}});
+              },
+              error: error => {
+              var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji religii o ID ${this.selectedItems.id}`}});
+            }
             })
           }
+          this.dictionaryService.getReligions()
         })
         break;
       case 'group':
@@ -161,9 +195,16 @@ export class DictionaryManagementComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.updateResources([result]).subscribe(response =>{
-              console.log(`Grupa o ID ${this.selectedItems.id} został edytowany:`, response);
-            })
+            this.dictionaryService.updateGroups([result]).subscribe({
+              next: response => {
+              var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Grupa o ID ${this.selectedItems.id} została edytowana`}});
+              },
+              error: error => {
+              var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji grupy o ID ${this.selectedItems.id}`}});
+            }
+          })
+            
+            this.dictionaryService.getGroups()
           }
         })
         break;
@@ -174,9 +215,14 @@ export class DictionaryManagementComponent implements OnInit {
         })
         resourceDialogRef.afterClosed().subscribe(result => {
           if (result) {
-            this.dictionaryService.updateResources([result]).subscribe(response =>{
-              console.log(`Zasób o ID ${this.selectedItems.id} został edytowany:`, response);
-            })
+            this.dictionaryService.updateResources([result]).subscribe({
+              next: response => {
+              var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został edytowany`}});
+              },
+              error: error => {
+              var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji zasobu o ID ${this.selectedItems.id}`}});
+            }
+          })
           }
         })
       
@@ -196,33 +242,49 @@ export class DictionaryManagementComponent implements OnInit {
         if (result) {
           switch (this.type) {
             case 'culture':
-              this.dictionaryService.deleteCultures([this.selectedItems.id]).subscribe(response =>
-                {
-                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+              this.dictionaryService.deleteCultures([this.selectedItems.id]).subscribe({
+                next: response => {
+                  var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                },
+                error: error => {
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: error.message}});
                 }
+              }
               
                 
               );
               break;
             case 'religion':
-              this.dictionaryService.deleteReligions([this.selectedItems.id]).subscribe(response =>
-                {
-                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+              this.dictionaryService.deleteReligions([this.selectedItems.id]).subscribe({
+                next: response => {
+                  var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                },
+                error: error => {
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n" + error.message}});
                 }
+             }
               );
               break;
             case 'group':
-              this.dictionaryService.deleteGroups([this.selectedItems.id]).subscribe(response =>
-                {
-                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+              this.dictionaryService.deleteGroups([this.selectedItems.id]).subscribe({
+                next: response => {
+                  var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                },
+                error: error => {
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n" + error.message}});
                 }
+              }
               );
               break;
             case 'resource':
-              this.dictionaryService.deleteResources([this.selectedItems.id]).subscribe(response =>
-                {
-                  console.log(`Zasób o ID ${this.selectedItems.id} został usunięty:`, response);
+              this.dictionaryService.deleteResources([this.selectedItems.id]).subscribe({
+                next: response => {
+                  var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                },
+                error: error => {
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n" + error.message}});
                 }
+              }
               );
               break;
             default:

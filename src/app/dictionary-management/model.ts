@@ -19,7 +19,7 @@ export interface Religion {
 export interface Group {
     id:  number;
     name: string;
-    baseSatisfaction: number;
-    recruitmentSize: number;
+    baseHappiness: number;
+    volunteers: number;
   }
   
