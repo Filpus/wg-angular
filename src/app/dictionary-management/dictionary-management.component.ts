@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Signal, signal, computed, effect } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditCulturesDialogComponent } from './add-edit-cultures-dialog/add-edit-cultures-dialog.component';
 import { AddEditGroupsDialogComponent } from './add-edit-groups-dialog/add-edit-groups-dialog.component';
@@ -24,13 +24,17 @@ import { ErrorDialogComponent } from './confirmation-dialog/error-dialof.compone
   styleUrls: ['./dictionary-management.component.css']
 })
 export class DictionaryManagementComponent implements OnInit {
-  resources = new Observable<Resource[]>();
-  groups = new Observable<Group[]>();
+  // resources = new Observable<Resource[]>();
+  // groups = new Observable<Group[]>();
   
-  religions =new Observable<Religion[]>();
+  // religions =new Observable<Religion[]>();
   
-  cultures = new Observable<Culture[]>();
-  
+  // cultures = new Observable<Culture[]>();
+  resources = signal<Resource[]>([]);
+  groups = signal<Group[]>([]);
+  religions = signal<Religion[]>([]);
+  cultures = signal<Culture[]>([]);
+
   
   displayedColumnsGroups: string[] = ['name', 'baseHappiness', 'volunteers'];
   displayedColumnsReligions: string[] = ['name'];
@@ -47,14 +51,20 @@ export class DictionaryManagementComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
   }
-  loadData(): void {
-    this.resources = this.dictionaryService.getResources();
-    this.groups = this.dictionaryService.getGroups();
-    this.cultures = this.dictionaryService.getCultures();
-    this.religions = this.dictionaryService.getReligions();
-    // Podobnie załaduj dane dla grup, religii, kultur
-  }
-
+    // loadData(): void {
+    //   this.resources = this.dictionaryService.getResources();
+    //   this.groups = this.dictionaryService.getGroups();
+    //   this.cultures = this.dictionaryService.getCultures();
+    //   this.religions = this.dictionaryService.getReligions();
+    //   // Podobnie załaduj dane dla grup, religii, kultur
+    // }
+    loadData(): void {
+      this.dictionaryService.getResources().subscribe((resources) => this.resources.set(resources));
+      this.dictionaryService.getGroups().subscribe((groups) => this.groups.set(groups));
+      this.dictionaryService.getCultures().subscribe((cultures) => this.cultures.set(cultures));
+      this.dictionaryService.getReligions().subscribe((religions) => this.religions.set(religions));
+    }
+    
 
 
   openAddDialog(type: string) {
@@ -69,12 +79,12 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.addCultures([result]).subscribe({
               next: response => {
                 var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Kultura została poprawnie dodana"}});
-                },
+                this.cultures.update(cultures => [...cultures, result]);
+              },
                 error: error => {
                 var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania kultury: \n" + error.message}});
               }
               })
-            this.cultures = this.dictionaryService.getCultures();
           }
         })
 
@@ -90,13 +100,13 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.addReligions([result]).subscribe({
               next: response => {
                 var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Religia została poprawnie dodana"}});
-                },
+                this.cultures.update(cultures => [...cultures, result]);
+              },
                 error: error => {
                 var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania religii: \n" + error.message}});
               }
             })
 
-            this.religions = this.dictionaryService.getReligions();
           }
         })
         break;
@@ -110,14 +120,15 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.addGroups([result]).subscribe({
               next: response => {
                 var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Grupa została poprawnie dodana"}});
-                },
+                this.groups.update(groups => [...groups, result]);  
+              },
                 error: error => {
                 var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania grupy: \n" + error.message}});
               }
             })
           }
         })
-        this.groups = this.dictionaryService.getGroups();
+        this.dictionaryService.getGroups().subscribe((groups) => this.groups.set(groups));
         break;
       case 'resource':
 
@@ -129,12 +140,12 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.addResources([result]).subscribe({
               next: response => {
                 var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: "Zasób został poprawnie dodany"}});
+                this.resources.update(resources => [...resources, result]);
               },
               error: error => {
                 var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie dodawania zasobu: \n" + error.message}});
               }
             })
-            this.resources = this.dictionaryService.getResources();
           }
 
         })
@@ -160,13 +171,13 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.updateCultures([result]).subscribe({
               next: response => {
               var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Kultura o ID ${this.selectedItems.id} została edytowana`}});
-              },
+              this.cultures.update(cultures => cultures.map(culture => culture.id === result.id ? result : culture));
+            },
               error: error => {
               var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji kultury o ID ${this.selectedItems.id}`}});
             }
             })
           }
-          this.dictionaryService.getCultures()
         })
         break;
       case 'religion':
@@ -179,13 +190,13 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.updateReligions([result]).subscribe({
               next: response => {
               var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Religia o ID ${this.selectedItems.id} została edytowana`}});
-              },
+              this.religions.update(religions => religions.map(religion => religion.id === result.id ? result : religion));
+            },
               error: error => {
               var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji religii o ID ${this.selectedItems.id}`}});
             }
             })
           }
-          this.dictionaryService.getReligions()
         })
         break;
       case 'group':
@@ -198,13 +209,13 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.updateGroups([result]).subscribe({
               next: response => {
               var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Grupa o ID ${this.selectedItems.id} została edytowana`}});
-              },
+              this.groups.update(groups => groups.map(group => group.id === result.id ? result : group));
+            },
               error: error => {
               var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji grupy o ID ${this.selectedItems.id}`}});
             }
           })
             
-            this.dictionaryService.getGroups()
           }
         })
         break;
@@ -218,11 +229,13 @@ export class DictionaryManagementComponent implements OnInit {
             this.dictionaryService.updateResources([result]).subscribe({
               next: response => {
               var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został edytowany`}});
-              },
+              this.resources.update(resources => resources.map(resource => resource.id === result.id ? result : resource));
+            },
               error: error => {
               var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: `Błąd podczas edycji zasobu o ID ${this.selectedItems.id}`}});
             }
           })
+            this.dictionaryService.getResources().subscribe((resources) => this.resources.set(resources));
           }
         })
       
@@ -245,47 +258,57 @@ export class DictionaryManagementComponent implements OnInit {
               this.dictionaryService.deleteCultures([this.selectedItems.id]).subscribe({
                 next: response => {
                   var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                  this.cultures.update(cultures => cultures.filter(culture => culture.id !== this.selectedItems.id));
                 },
                 error: error => {
-                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: error.message}});
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message: "Bład w trakcie usuwania: \ Istnieją klucze obce powiązane z elementem" + error.message}});
                 }
+              
               }
+              
               
                 
               );
+              this.dictionaryService.getCultures().subscribe((cultures) => this.cultures.set(cultures));
               break;
             case 'religion':
               this.dictionaryService.deleteReligions([this.selectedItems.id]).subscribe({
                 next: response => {
                   var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                  this.religions.update(religions => religions.filter(religion => religion.id !== this.selectedItems.id));
                 },
                 error: error => {
-                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n" + error.message}});
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \ Istnieją klucze obce powiązane z elementem" + error.message}});
                 }
              }
               );
+              this.dictionaryService.getReligions().subscribe((religions) => this.religions.set(religions));
               break;
             case 'group':
               this.dictionaryService.deleteGroups([this.selectedItems.id]).subscribe({
                 next: response => {
                   var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                  this.groups.update(groups => groups.filter(group => group.id !== this.selectedItems.id));
                 },
                 error: error => {
-                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n" + error.message}});
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n Istnieją klucze obce powiązane z elementem" + error.message}});
                 }
               }
               );
+              this.dictionaryService.getGroups().subscribe((groups) => this.groups.set(groups));
               break;
             case 'resource':
               this.dictionaryService.deleteResources([this.selectedItems.id]).subscribe({
                 next: response => {
                   var completeDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: `Zasób o ID ${this.selectedItems.id} został poprawnie usunięty`}});
+                  this.resources.update(resources => resources.filter(resource => resource.id !== this.selectedItems.id));
                 },
                 error: error => {
-                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n" + error.message}});
+                  var errorDialogRef = this.dialog.open(ErrorDialogComponent, {data: {message:"Bład w trakcie usuwania: \n Istnieją klucze obce powiązane z elementem" }});
                 }
               }
               );
+              this.dictionaryService.getResources().subscribe((resources) => this.resources.set(resources));
               break;
             default:
               return;
