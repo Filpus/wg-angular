@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,  Signal, signal, computed, effect } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms'; // Import tego modułu
 import { CommonModule, NgFor } from '@angular/common';
@@ -13,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Validators } from '@angular/forms';
+import { Validators, ValidationErrors } from '@angular/forms';
 
 @Component({
   selector: 'app-offer',
@@ -34,59 +34,62 @@ import { Validators } from '@angular/forms';
 })
 export class OfferComponent {
 
-  offerForm: FormGroup;
-  countries = new Observable<Nation[]>
-  resourceTypes = new Observable<Resource[]>
-  ownedResource$: Observable<OwnedResource[]> =  new Observable<OwnedResource[]>();;
-  ownedResource: OwnedResource[] = []; 
+  // offerForm: FormGroup;
+  // countries = new Observable<Nation[]>
+  // resourceTypes = new Observable<Resource[]>
+  // ownedResource$: Observable<OwnedResource[]> =  new Observable<OwnedResource[]>();;
+  // ownedResource: OwnedResource[] = []; 
 
-  nationId = 5
-  constructor(private offerService: OfferService, private dictionaryService: DictionaryService ,private fb: FormBuilder) {
-    this.offerForm = this.fb.group({
-      destinationCountry: [''],
-      offeredResources: this.fb.array([]),
-      requestedResources: this.fb.array([]),
-    });
-  }
+  // nationId = 5
+  // constructor(private offerService: OfferService, private dictionaryService: DictionaryService ,private fb: FormBuilder) {
+  //   this.offerForm = this.fb.group({
+  //     durationTime: [1,[Validators.min(1)]],
+  //     destinationCountry: [''],
+  //     offeredResources: this.fb.array([]),
+  //     requestedResources: this.fb.array([]),
+  //   });
+  // }
 
-  ngOnInit(){
-    this.resourceTypes = this.dictionaryService.getResources()
-    this.countries = this.offerService.getAllNations()
-    this.ownedResource$ = this.offerService.getOwnedResourceById(5);
-    this.ownedResource$.subscribe((data) => {
-      this.ownedResource = data;  // Przypisujemy dane do lokalnej tablicy
-    });
-    this.offerForm.get('destinationCountry')?.setValidators([
-      control => this.validateDestinationCountry(control as FormControl),
-    ]);
-  }
+  // ngOnInit(){
+  //   this.resourceTypes = this.dictionaryService.getResources()
+  //   this.countries = this.offerService.getAllNations()
+  //   this.ownedResource$ = this.offerService.getOwnedResourceById(5);
+  //   this.ownedResource$.subscribe((data) => {
+  //     this.ownedResource = data;  // Przypisujemy dane do lokalnej tablicy
+  //   });
+  //   this.offerForm.get('destinationCountry')?.setValidators([
+  //     control => this.validateDestinationCountry(control as FormControl),
+  //   ]);
+  // }
   
-  // Funkcja walidująca
-  get offeredResources(): FormArray {
-    return this.offerForm.get('offeredResources') as FormArray;
-  }
+  // // Funkcja walidująca
+  // get offeredResources(): FormArray {
+  //   return this.offerForm.get('offeredResources') as FormArray;
+  // }
 
-  get requestedResources(): FormArray {
-    return this.offerForm.get('requestedResources') as FormArray;
-  }
+  // get requestedResources(): FormArray {
+  //   return this.offerForm.get('requestedResources') as FormArray;
+  // }
 
-  addOfferedResource() {
-    const resourceGroup = this.fb.group({
-      type: ['', [Validators.required, this.validateUniqueResource.bind(this)]], // Typ zasobu
-      quantity: [0, [Validators.min(0), (control : AbstractControl) => this.validateOfferedQuantity(control)]],
-    });
+  // addOfferedResource() {
+  //   const resourceGroup = this.fb.group({
+  //     type: ['', [Validators.required, this.validateUniqueResource.bind(this)]], // Typ zasobu
+  //     quantity: [0, [Validators.min(0), (control : AbstractControl) => this.validateOfferedQuantity(control)]],
+  //   });
+
+
   
-    this.offeredResources.push(resourceGroup);
-  }
+  //   this.offeredResources.push(resourceGroup);
+  // }
   
-  addRequestedResource() {
-    const resourceGroup = this.fb.group({
-      type: ['', [Validators.required, this.validateUniqueResource.bind(this)]], // Typ zasobu
-      quantity: [0, [Validators.min(0)]],
-    });
+  // addRequestedResource() {
+  //   const resourceGroup = this.fb.group({
+  //     type: ['', [Validators.required, this.validateUniqueResource.bind(this)]], // Typ zasobu
+  //     quantity: [0, [Validators.min(0)]],
+  //   });
   
-    this.requestedResources.push(resourceGroup);
-  }
+  //   this.requestedResources.push(resourceGroup);
+  // }
   removeResource(index: number, type: 'offered' | 'requested') {
     if (type === 'offered') {
       this.offeredResources.removeAt(index);
@@ -96,72 +99,72 @@ export class OfferComponent {
   }
 
 
-  // Walidacja: nie można wybrać własnego kraju
-  validateDestinationCountry(control: FormControl): { [key: string]: boolean } | null {
-    if (control.value === this.nationId) {
-      return { invalidCountry: true };
-    }
-    return null;
-  }
+  // // Walidacja: nie można wybrać własnego kraju
+  // validateDestinationCountry(control: FormControl): { [key: string]: boolean } | null {
+  //   if (control.value === this.nationId) {
+  //     return { invalidCountry: true };
+  //   }
+  //   return null;
+  // }
 
-  getOwnedAmount(resourceId: string | null): number {
-    if (!resourceId) return 0;
-    const resource = this.ownedResource.find((r) => r.resourceId === Number(resourceId));
-    return resource ? resource.amount : 0;
-  }
+  // getOwnedAmount(resourceId: string | null): number {
+  //   if (!resourceId) return 0;
+  //   const resource = this.ownedResource.find((r) => r.resourceId === Number(resourceId));
+  //   return resource ? resource.amount : 0;
+  // }
   
-  onResourceTypeChange(resourceId: string, index: number, type: 'offered' | 'requested') {
-    const control = type === 'offered' ? this.offeredResources.at(index) : this.requestedResources.at(index);
-    const ownedAmount = this.getOwnedAmount(resourceId);
+  // onResourceTypeChange(resourceId: string, index: number, type: 'offered' | 'requested') {
+  //   const control = type === 'offered' ? this.offeredResources.at(index) : this.requestedResources.at(index);
+  //   const ownedAmount = this.getOwnedAmount(resourceId);
   
-    if (control) {
-      const quantityControl = control.get('quantity');
-      if (quantityControl) {
-        // Walidacja ilości względem posiadanych zasobów
-        if (quantityControl.value > ownedAmount) {
-          quantityControl.setValue(ownedAmount);
-        }
-      }
-    }
-  }
-  
-
-  hasExceededMaxError(resource: AbstractControl): boolean {
-    return resource.get('quantity')?.hasError('maxExceeded') ?? false;
-  }
+  //   if (control) {
+  //     const quantityControl = control.get('amount');
+  //     if (quantityControl) {
+  //       // Walidacja ilości względem posiadanych zasobów
+  //       if (quantityControl.value > ownedAmount) {
+  //         quantityControl.setValue(ownedAmount);
+  //       }
+  //     }
+  //   }
+  // }
   
 
-  // Walidacja: nie można wybrać tego samego zasobu dwa razy
-  validateUniqueResource(control: FormControl): { [key: string]: boolean } | null {
-    const type = control.value;
-    const allTypes = [
-      ...this.offeredResources.controls.map((c) => c.get('type')?.value),
-      ...this.requestedResources.controls.map((c) => c.get('type')?.value),
-    ];
+  // hasExceededMaxError(resource: AbstractControl): boolean {
+  //   return resource.get('quantity')?.hasError('maxExceeded') ?? false;
+  // }
   
-    const occurrences = allTypes.filter((t) => t === type).length;
+
+  // // Walidacja: nie można wybrać tego samego zasobu dwa razy
+  // validateUniqueResource(control: FormControl): { [key: string]: boolean } | null {
+  //   const type = control.value;
+  //   const allTypes = [
+  //     ...this.offeredResources.controls.map((c) => c.get('type')?.value),
+  //     ...this.requestedResources.controls.map((c) => c.get('type')?.value),
+  //   ];
   
-    if (occurrences > 1) {
-      return { duplicateResource: true };
-    }
-    return null;
-  }
-  // Walidacja: ilość nie może przekroczyć dostępnych zasobów w ownedResource
-  validateOfferedQuantity(control: AbstractControl): { [key: string]: boolean } | null {
-    const parent = control.parent as FormGroup;
-    if (!parent) return null;
+  //   const occurrences = allTypes.filter((t) => t === type).length;
   
-    const typeControl = parent.get('type');
-    const typeId = typeControl?.value;
-    const quantity = control.value;
+  //   if (occurrences > 1) {
+  //     return { duplicateResource: true };
+  //   }
+  //   return null;
+  // }
+  // // Walidacja: ilość nie może przekroczyć dostępnych zasobów w ownedResource
+  // validateOfferedQuantity(control: AbstractControl): { [key: string]: boolean } | null {
+  //   const parent = control.parent as FormGroup;
+  //   if (!parent) return null;
   
-    const ownedAmount = this.getOwnedAmount(typeId);
+  //   const typeControl = parent.get('type');
+  //   const typeId = typeControl?.value;
+  //   const quantity = control.value;
   
-    if (quantity > ownedAmount) {
-      return { maxExceeded: true }; // Walidator zwraca błąd, jeśli ilość jest większa niż posiadana
-    }
-    return null;
-  }
+  //   const ownedAmount = this.getOwnedAmount(typeId);
+  
+  //   if (quantity > ownedAmount) {
+  //     return { maxExceeded: true }; // Walidator zwraca błąd, jeśli ilość jest większa niż posiadana
+  //   }
+  //   return null;
+  // }
   
 
   submitOffer() {
@@ -169,13 +172,13 @@ export class OfferComponent {
       // Pobierz dane formularza
       const formData = this.offerForm.value;
       const destinationCountry = formData.destinationCountry;
-  
+      const duration = formData.durationTime;
       // Tworzymy umowę handlową
       const tradeAgreement: TradeAgreement = {
         oferingNationId: this.nationId, // Twoje ID państwa
         receivingNationId: destinationCountry, // ID wybranego kraju
         isAccepted: false, // Wstępnie nie zaakceptowana
-        duration: 12, // Przykładowa długość umowy, może być dynamiczna
+        duration: duration, // Przykładowa długość umowy, może być dynamiczna
       };
   
       // Wyślij umowę handlową
@@ -203,7 +206,7 @@ export class OfferComponent {
       return {
         resourceId: resourceTypeId,
         tradeAgreementId: tradeAgreementId,
-        quantity: quantity,
+        amount: quantity,
       };
     });
   
@@ -245,5 +248,105 @@ export class OfferComponent {
   getFormGroup(control: AbstractControl): FormGroup {
     return control as FormGroup;
   }
+
+
+  offerForm: FormGroup;
+  countries = signal<Nation[]>([]);
+  resourceTypes = signal<Resource[]>([]);
+  ownedResources = signal<OwnedResource[]>([]);
+  nationId = 5;
+
+  constructor(
+    private offerService: OfferService,
+    private dictionaryService: DictionaryService,
+    private fb: FormBuilder
+  ) {
+    this.offerForm = this.fb.group({
+      durationTime: [1, [Validators.min(1), Validators.required]],
+      destinationCountry: ['', [Validators.required]],
+      offeredResources: this.fb.array([]),
+      requestedResources: this.fb.array([]),
+    },  { validators: this.atLeastOneResourceValidator });
+
+    // Pobierz dane za pomocą sygnałów
+    this.loadData();
+  }
+
+  loadData() {
+    this.offerService.getAllNations().subscribe((nations) => this.countries.set(nations));
+    this.dictionaryService.getResources().subscribe((resources) => this.resourceTypes.set(resources));
+    this.offerService.getOwnedResourceById(this.nationId).subscribe((resources) =>
+      this.ownedResources.set(resources)
+    );
+  }
+
+  get offeredResources(): FormArray {
+    return this.offerForm.get('offeredResources') as FormArray;
+  }
+
+  get requestedResources(): FormArray {
+    return this.offerForm.get('requestedResources') as FormArray;
+  }
+
+  getOwnedAmount(resourceId: string | null): number {
+    if (!resourceId) return 0;
+    const resource = this.ownedResources().find((r) => r.resourceId === Number(resourceId));
+    return resource ? resource.amount : 0;
+  }
+
+  addOfferedResource() {
+    const resourceGroup = this.fb.group({
+      type: ['', [Validators.required, this.validateUniqueResource.bind(this)]],
+      quantity: [0, [Validators.min(0), this.validateOfferedQuantity.bind(this)]],
+    });
+    this.offeredResources.push(resourceGroup);
+  }
+
+  addRequestedResource() {
+    const resourceGroup = this.fb.group({
+      type: ['', [Validators.required, this.validateUniqueResource.bind(this)]],
+      quantity: [0, [Validators.min(0)]],
+    });
+    this.requestedResources.push(resourceGroup);
+  }
+
+  validateUniqueResource(control: FormControl) {
+    const type = control.value;
+    const allTypes = [
+      ...this.offeredResources.controls?.map((c) => c.get('type')?.value) || [],
+      ...this.requestedResources.controls?.map((c) => c.get('type')?.value) || [],
+    ];
+
+    const occurrences = allTypes.filter((t) => t === type).length;
+    return occurrences > 1 ? { duplicateResource: true } : null;
+  }
+
+  validateOfferedQuantity(control: FormControl) {
+    const parent = control.parent as FormGroup;
+    if (!parent) return null;
+
+    const typeControl = parent.get('type');
+    const typeId = typeControl?.value;
+    const quantity = control.value;
+
+    const ownedAmount = this.getOwnedAmount(typeId);
+    return quantity > ownedAmount ? { maxExceeded: true } : null;
+  }
+  atLeastOneResourceValidator(control: AbstractControl): ValidationErrors | null {
+    const offeredResources = (control.get('offeredResources') as FormArray | null)?.controls || [];
+    const requestedResources = (control.get('requestedResources') as FormArray | null)?.controls || [];
   
+    // Sprawdzamy, czy jest przynajmniej jeden zasób oferowany lub chciany
+    const hasOfferedResource = offeredResources.length > 0 && offeredResources.some(resource => resource.value.quantity > 0);
+    const hasRequestedResource = requestedResources.length > 0 && requestedResources.some(resource => resource.value.quantity > 0);
+  
+    return (hasOfferedResource || hasRequestedResource) ? null : { noResources: true };
+  }
+
+  // submitOffer() {
+  //   if (this.offerForm.valid) {
+  //     // Implementacja wysyłania formularza...
+  //   }
+  // }
+
 }

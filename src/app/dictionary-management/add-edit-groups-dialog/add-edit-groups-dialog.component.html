@@ -2,17 +2,17 @@
 <mat-dialog-content>
   <mat-form-field>
     Nazwa
-    <input matInput [(ngModel)]="item.name" required />
+    <input matInput [(ngModel)]="item.name" required maxlength="255"/>
   </mat-form-field>
 
   <mat-form-field>
     Bazowe zadowolenie
-    <input matInput [(ngModel)]="item.baseSatisfaction" type="number" required />
+    <input matInput [(ngModel)]="item.baseHappiness" type="number" required min = "0" max="1" />
   </mat-form-field>
 
   <mat-form-field>
     Ilość Ochotników
-    <input matInput [(ngModel)]="item.recruitmentSize" type="number" required />
+    <input matInput [(ngModel)]="item.volunteers" type="number" required min = "0" />
   </mat-form-field>
 
 
