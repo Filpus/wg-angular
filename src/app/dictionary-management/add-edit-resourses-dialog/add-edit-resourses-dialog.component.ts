@@ -33,14 +33,14 @@ export class AddEditResoursesDialogComponent {
     // Przygotowanie danych dla dialogu
 
     if (data.item === null){
-      this.item = {name: "",isMain: false};
+      this.item = {id: 0,name: "",isMain: false};
     } else {
-      this.item = {name: data.item.name, isMain: data.item.isMain}
+      this.item = {id: data.id, name: data.name, isMain: data.isMain}
       this.isEditing = true;
     }
     this.resourceForm = new FormGroup({
-      name: new FormControl(data.item?.name || '', Validators.required),
-      isMain: new FormControl(data.item?.isMain || false)
+      name: new FormControl(data.name || '', Validators.required),
+      isMain: new FormControl(data.isMain || false)
     });
 
     
@@ -53,7 +53,7 @@ export class AddEditResoursesDialogComponent {
   onSubmit(): void {
     if (this.resourceForm.valid) {
       const resource: Resource = {
-        id: this.data.item?.id || 0, // Możesz tu nadać ID np. 0 dla nowych zasobów
+        id: this.item.id, // Możesz tu nadać ID np. 0 dla nowych zasobów
         name: this.resourceForm.value.name,
         isMain: this.resourceForm.value.isMain,
       };

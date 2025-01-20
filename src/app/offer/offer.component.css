@@ -162,3 +162,16 @@ button:hover {
   flex: 1;
   text-align: right;
 }
+.duration-container {
+  display: flex;
+  align-items: center;
+}
+
+.duration-label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.duration-input {
+  width: 150px;  /* Dostosowanie szerokości pola */
+}

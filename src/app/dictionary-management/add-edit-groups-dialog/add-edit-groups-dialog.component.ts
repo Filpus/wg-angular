@@ -26,9 +26,9 @@ export class AddEditGroupsDialogComponent {
     // Przygotowanie danych dla dialogu
 
     if (data.item === null){
-      this.item = {id: 0, name: "",baseSatisfaction: 0.50, recruitmentSize: 500};
+      this.item = {id: 0, name: "",baseHappiness: 0.50, volunteers: 500};
     } else {
-      this.item = {id: data.item.id, baseSatisfaction: data.item.baseSatisfaction, recruitmentSize: data.item.recruitmentSize}
+      this.item = {id: data.item.id,name: data.name, baseHappiness: data.item.baseHappiness, volunteers: data.item.volunteers}
       this.isEditing = true;
     }
 

@@ -1,4 +1,4 @@
-<div class="offer-container">
+<!-- <div class="offer-container">
   <h1>Złóż ofertę handlową</h1>
 
   <div class="header">
@@ -15,9 +15,22 @@
         </mat-error>
       </mat-form-field>
       
-      <button mat-raised-button color="primary" (click)="submitOffer()">Złóż ofertę</button>
+      <button mat-raised-button color="primary" (click)="submitOffer()" [disabled]="!offerForm.valid">Złóż ofertę</button>
     </form>
   </div>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Czas trwania umowy (w miesiącach)</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="durationTime"
+      min="1"
+    />
+    <mat-error *ngIf="offerForm.get('durationTime')?.hasError('min')">
+      Czas trwania musi wynosić przynajmniej 1 turę.
+    </mat-error>
+  </mat-form-field>
 
   <div class="columns-container">
     <div class="column">
@@ -26,7 +39,6 @@
 
       <div *ngFor="let resource of offeredResources.controls; let i = index" class="resource-item" [formGroup]="getFormGroup(resource)">
         <div class="resource-row">
-          <!-- Typ zasobu -->
           <mat-form-field class="type-field" appearance="fill">
             <mat-label>Typ zasobu</mat-label>
             <mat-select formControlName="type">
@@ -39,13 +51,11 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Ilość posiadanych zasobów obok -->
           <div class="owned-field">
             <p><strong>Posiadane:</strong> {{ getOwnedAmount(resource.get('type')?.value) || 0 }}</p>
           </div>
         </div>
 
-        <!-- Ilość zasobu -->
         <mat-form-field appearance="fill" class="quantity-field">
           <mat-label>Ilość</mat-label>
           <input
@@ -64,7 +74,6 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Usuń zasób -->
         <button mat-icon-button color="warn" (click)="removeResource(i, 'offered')">
           <mat-icon>delete</mat-icon>
         </button>
@@ -77,7 +86,7 @@
 
       <div *ngFor="let resource of requestedResources.controls; let i = index" class="resource-item" [formGroup]="getFormGroup(resource)">
         <div class="resource-row">
-          <!-- Typ zasobu -->
+
           <mat-form-field class="type-field" appearance="fill">
             <mat-label>Typ zasobu</mat-label>
             <mat-select formControlName="type">
@@ -90,13 +99,11 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Ilość posiadanych zasobów obok -->
           <div class="owned-field">
             <p><strong>Posiadane:</strong> {{ getOwnedAmount(resource.get('type')?.value) || 0 }}</p>
           </div>
         </div>
 
-        <!-- Ilość zasobu -->
         <mat-form-field appearance="fill" class="quantity-field">
           <mat-label>Ilość</mat-label>
           <input matInput type="number" formControlName="quantity" [min]="0" />
@@ -105,7 +112,6 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Usuń zasób -->
         <button mat-icon-button color="warn" (click)="removeResource(i, 'requested')">
           <mat-icon>delete</mat-icon>
         </button>
@@ -114,4 +120,124 @@
   </div>
 
 
+</div> -->
+
+
+<div class="offer-container">
+  <h1>Złóż ofertę handlową</h1>
+
+  <div class="header">
+    <form [formGroup]="offerForm">
+      <mat-form-field appearance="fill">
+        <mat-label>Państwo Docelowe</mat-label>
+        <mat-select formControlName="destinationCountry">
+          <mat-option *ngFor="let country of countries()" [value]="country.id">
+            {{ country.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="offerForm.get('destinationCountry')?.hasError('invalidCountry')">
+          Nie możesz wybrać swojego własnego kraju.
+        </mat-error>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="submitOffer()" [disabled]="!offerForm.valid">Złóż ofertę</button>
+    </form>
+  </div>
+
+  <div class="duration-container">
+    <mat-form-field appearance="fill">
+    <mat-label class="duration-label">Czas trwania umowy:</mat-label> <!-- Napis obok pola -->
+    <input
+      matInput
+      type="number"
+      formControlName="durationTime"
+      min="1"
+      value=1
+    />
+    <mat-error *ngIf="offerForm.get('durationTime')?.hasError('min')">
+      Czas trwania musi wynosić przynajmniej 1 turę.
+    </mat-error>
+  </mat-form-field>
+</div>
+
+  <div class="columns-container">
+    <!-- Oferowane zasoby -->
+    <div class="column">
+      <h2>Oferowane zasoby</h2>
+      <button mat-raised-button color="accent" (click)="addOfferedResource()">Dodaj zasób</button>
+
+      <div *ngFor="let resource of offeredResources.controls; let i = index" class="resource-item" [formGroup]="getFormGroup(resource)">
+        <div class="resource-row">
+          <mat-form-field class="type-field" appearance="fill">
+            <mat-label>Typ zasobu</mat-label>
+            <mat-select formControlName="type">
+              <mat-option *ngFor="let type of resourceTypes()" [value]="type.id">
+                {{ type.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="resource.get('type')?.hasError('duplicateResource')">
+              Zasób może być wybrany tylko raz.
+            </mat-error>
+          </mat-form-field>
+
+          <div class="owned-field">
+            <p><strong>Posiadane:</strong> {{ getOwnedAmount(resource.get('type')?.value) || 0 }}</p>
+          </div>
+        </div>
+
+        <mat-form-field appearance="fill" class="quantity-field">
+          <mat-label>Ilość</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="quantity"
+            [min]="1"
+            [max]="getOwnedAmount(resource.get('type')?.value) || 0"
+          />
+          <mat-hint>Pozostałe zasoby: {{ getOwnedAmount(resource.get('type')?.value) || 0 }}</mat-hint>
+          <mat-error *ngIf="resource.get('quantity')?.hasError('maxExceeded')">
+            Ilość nie może przekraczać posiadanych zasobów.
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-icon-button color="warn" (click)="removeResource(i, 'offered')">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chciane zasoby -->
+    <div class="column">
+      <h2>Chciane zasoby</h2>
+      <button mat-raised-button color="accent" (click)="addRequestedResource()">Dodaj zasób</button>
+
+      <div *ngFor="let resource of requestedResources.controls; let i = index" class="resource-item" [formGroup]="getFormGroup(resource)">
+        <div class="resource-row">
+          <mat-form-field class="type-field" appearance="fill">
+            <mat-label>Typ zasobu</mat-label>
+            <mat-select formControlName="type">
+              <mat-option *ngFor="let type of resourceTypes()" [value]="type.id">
+                {{ type.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="resource.get('type')?.hasError('duplicateResource')">
+              Zasób może być wybrany tylko raz.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="quantity-field">
+            <mat-label>Ilość</mat-label>
+            <input matInput type="number" formControlName="quantity" [min]="1" />
+            <mat-error *ngIf="resource.get('quantity')?.hasError('min')">
+              Ilość nie może być ujemna.
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-icon-button color="warn" (click)="removeResource(i, 'requested')">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
