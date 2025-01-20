@@ -43,7 +43,7 @@ export class AddEditPopDialogComponent {
     // Przygotowanie danych dla dialogu
 
     if (data.item === null) {
-      this.item = { id: 0, socialGroup: groups[0], culture: cultures[0], religion: religions[0], localisation: localisations[0], satisfaction: 50, count: 100 };
+      this.item = { id: 0, socialGroup: undefined, culture: undefined, religion: undefined, localisation: undefined, satisfaction: 0, count: 1 };
     } else {
       this.item = {
         id: data.item.id, socialGroup: data.item.socialGroup, culture: data.item.culture, religion: data.item.religion,

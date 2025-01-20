@@ -30,10 +30,10 @@ export interface Localisation {
 
 export interface Population {
   id: number;
-  socialGroup: Group;
-  culture: Culture;
-  religion: Religion;
-  localisation: Localisation;
+  socialGroup?: Group;
+  culture?: Culture;
+  religion?: Religion;
+  localisation?: Localisation;
   satisfaction: number;
   count: number;
 }
