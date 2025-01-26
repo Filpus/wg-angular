@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDialogTitle } from '@angular/material/dialog';
 import { MatDialogContent } from '@angular/material/dialog';
@@ -19,7 +19,9 @@ import { MatInputModule } from '@angular/material/input'; // Dodatkowo dla innyc
 import { CommonModule } from '@angular/common';
 import { MatSelectChange } from '@angular/material/select';
 
-import { cultures, religions, groups, localisations, Population } from '../dictionary-management/model';
+import { Culture, Religion, Group, Localisation, Population } from '../dictionary-management/model';
+import { PopulationManagementService } from '../population-management/population-management.service';
+import { DictionaryService } from '../dictionary-management/dictionary.service';
 
 @Component({
   selector: 'app-add-edit-pop-dialog',
@@ -31,29 +33,56 @@ export class AddEditPopDialogComponent {
   item: Population;
   isEditing: boolean = false;
 
-  groups = groups
-  religions = religions
-  cultures = cultures
-  localisations = localisations
+  groups = signal<Group[]>([]);
+  religions = signal<Religion[]>([]);
+  cultures = signal<Culture[]>([]);
+  localisations = signal<Localisation[]>([]);
 
-  constructor(
+  constructor(private populationService: PopulationManagementService, private dictionaryService: DictionaryService,
     public dialogRef: MatDialogRef<AddEditPopDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     // Przygotowanie danych dla dialogu
 
+    this.loadData()
     if (data.item === null) {
-      this.item = { id: 0, socialGroup: undefined, culture: undefined, religion: undefined, localisation: undefined, satisfaction: 0, count: 1 };
+      console.log("dudu");
+      this.item = { id: 0, socialGroupId: undefined, cultureId: undefined, religionId: undefined, locationId: undefined, happiness: 0 };
     } else {
-      this.item = {
-        id: data.item.id, socialGroup: data.item.socialGroup, culture: data.item.culture, religion: data.item.religion,
-        localisation: data.item.localisation, satisfaction: data.item.satisfaction, count: data.item.count
-      }
+      this.item = data.item;
       this.isEditing = true;
     }
 
 
   }
+
+  loadData() {
+    this.dictionaryService.getGroups().subscribe((groups) => this.groups.set(groups));
+    this.dictionaryService.getCultures().subscribe((cultures) => this.cultures.set(cultures));
+    this.dictionaryService.getReligions().subscribe((religions) => this.religions.set(religions));
+    this.dictionaryService.getLocalisations().subscribe((localisations) => this.localisations.set(localisations));
+  }
+
+  getGroupName(id: number | undefined): string {
+    if (id === undefined || id === null) {
+      return "Brak";  // Jeśli id jest undefined lub null, zwróci "Brak"
+    }
+
+    return this.groups().find((g) => g.id === id)?.name ?? "Brak"
+  }
+
+  getReligionName(id?: number): string {
+    return this.religions().find((r) => r.id === id)?.name ?? "Brak"
+  }
+  getCultureName(id?: number): string {
+    return this.cultures().find((c) => c.id === id)?.name ?? "Brak"
+  }
+
+  getLocalisationName(id?: number): string {
+    return this.localisations().find((c) => c.id === id)?.name ?? "Brak"
+  }
+
+
   onCancel(): void {
     this.dialogRef.close();
   }

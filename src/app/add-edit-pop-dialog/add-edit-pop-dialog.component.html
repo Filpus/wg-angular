@@ -2,32 +2,32 @@
 <mat-dialog-content>
 
   <mat-form-field appearance="fill">
-    <mat-select [(ngModel)]="item.socialGroup" placeholder=" Wybierz grupę społeczną">
-      <mat-option *ngFor="let group of groups" [value]="group">
+    <mat-select [(ngModel)]=" item.socialGroupId" placeholder=" Wybierz grupę społeczną">
+      <mat-option *ngFor="let group of groups()" [value]="group.id">
         {{ group.name }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="fill">
-    <mat-select [(ngModel)]="item.culture" placeholder="Wybierz kulturę">
-      <mat-option *ngFor="let culture of cultures" [value]="culture">
+    <mat-select [(ngModel)]="item.cultureId" placeholder="Wybierz kulturę">
+      <mat-option *ngFor="let culture of cultures()" [value]="culture.id">
         {{ culture.name }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="fill">
-    <mat-select [(ngModel)]="item.religion" placeholder="Wybierz religię">
-      <mat-option *ngFor="let religion of religions" [value]="religion">
+    <mat-select [(ngModel)]="item.religionId" placeholder="Wybierz religię">
+      <mat-option *ngFor="let religion of religions()" [value]="religion.id">
         {{ religion.name }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="fill">
-    <mat-select [(ngModel)]="item.localisation" placeholder="Wybierz lokalizację">
-      <mat-option *ngFor="let loc of localisations" [value]="loc">
+    <mat-select [(ngModel)]="item.locationId" placeholder="Wybierz lokalizację">
+      <mat-option *ngFor="let loc of localisations()" [value]="loc.id">
         {{ loc.name }}
       </mat-option>
     </mat-select>
@@ -36,12 +36,7 @@
 
   <mat-form-field>
     Zadowolenie
-    <input matInput [(ngModel)]="item.satisfaction" type="number" required />
-  </mat-form-field>
-
-  <mat-form-field>
-    Liczba populacji
-    <input matInput [(ngModel)]="item.count" type="number" required />
+    <input matInput [(ngModel)]="item.happiness" type="number" required />
   </mat-form-field>
 
 

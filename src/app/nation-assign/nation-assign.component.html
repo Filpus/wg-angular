@@ -3,12 +3,12 @@
 </div>
 
 <div style="text-align: center;" class="controls">
-  <button mat-raised-button color="accent" (click)="save()">Zapisz </button>
+  <button mat-raised-button color="accent" (click)="saveChanges()">Zapisz </button>
   <button mat-raised-button (click)="exit()">Wyjdź</button>
 </div>
 
 <div class="container">
-  <table mat-table [dataSource]="nations" matSort class="mat-elevation-z8">
+  <table mat-table [dataSource]="nations()" matSort class="mat-elevation-z8">
     <!-- Kolumna z nazwą państwa -->
     <ng-container matColumnDef="nation">
       <th mat-header-cell *matHeaderCellDef> Państwo </th>
@@ -20,10 +20,11 @@
       <th mat-header-cell *matHeaderCellDef> Osoba </th>
       <td mat-cell *matCellDef="let element">
         <mat-form-field appearance="fill">
-          <mat-select [(ngModel)]="element.selectedPerson" placeholder="Wybierz użytkownika"
-            (selectionChange)="updateOptions(element.selectedPerson)">
-            <mat-option *ngFor="let user of users" [value]="user" [disabled]="usedUsers.has(user)">
-              {{ user }}
+          <mat-select [(ngModel)]="assignedUsers[element.id]" placeholder="Wybierz użytkownika"
+            (selectionChange)="updateOptions($event.value,element.id)">
+            <mat-option [value]=-1>Brak gracza</mat-option>
+            <mat-option *ngFor="let user of users()" [value]="user.id" [disabled]="usedUsers.has(user.name)">
+              {{ user.name }}
             </mat-option>
           </mat-select>
         </mat-form-field>

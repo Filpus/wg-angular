@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
@@ -7,11 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-
 import { AddEditPopDialogComponent } from '../add-edit-pop-dialog/add-edit-pop-dialog.component';
 import { DeleteDialogComponent } from '../dictionary-management/delete-dialog/delete-dialog.component';
-import { cultures, religions, groups, localisations, Population } from '../dictionary-management/model';
-
+import { Culture, Religion, Group, Localisation, Population } from '../dictionary-management/model';
+import { PopulationManagementService } from './population-management.service';
+import { DictionaryService } from '../dictionary-management/dictionary.service';
 
 @Component({
   selector: 'app-population-management',
@@ -27,15 +27,22 @@ import { cultures, religions, groups, localisations, Population } from '../dicti
   styleUrls: ['./population-management.component.css'],
 })
 export class PopulationManagementComponent {
-  displayedColumns: string[] = ['select', 'group', 'culture', 'religion', 'localisation', 'satisfaction', 'count'];
-  dataSource = new MatTableDataSource<Population>([
-    { id: 1, socialGroup: groups[0], culture: cultures[0], religion: religions[0], localisation: localisations[0], satisfaction: 75, count: 1000 },
-    { id: 2, socialGroup: groups[1], culture: cultures[1], religion: religions[1], localisation: localisations[1], satisfaction: 60, count: 500 },
-    { id: 3, socialGroup: groups[2], culture: cultures[2], religion: religions[2], localisation: localisations[2], satisfaction: 85, count: 200 }
-  ]);
+  displayedColumns: string[] = ['select', 'group', 'culture', 'religion', 'localisation', 'satisfaction'];
+  //dataSource = new MatTableDataSource<Population>([
+  //  { id: 1, socialGroup: groups[0], culture: cultures[0], religion: religions[0], localisation: localisations[0], satisfaction: 75, count: 1000 },
+  //  { id: 2, socialGroup: groups[1], culture: cultures[1], religion: religions[1], localisation: localisations[1], satisfaction: 60, count: 500 },
+  //  { id: 3, socialGroup: groups[2], culture: cultures[2], religion: religions[2], localisation: localisations[2], satisfaction: 85, count: 200 }
+  //]);
 
+  dataSource = signal<Population[]>([]);
+  groups = signal<Group[]>([]);
+  religions = signal<Religion[]>([]);
+  cultures = signal<Culture[]>([]);
+  localisations = signal<Localisation[]>([]);
   selectedPopulations: Population[] = [];
-  constructor(public dialog: MatDialog) { }
+  constructor(private populationService: PopulationManagementService, private dictionaryService: DictionaryService, public dialog: MatDialog) {
+    this.loadData()
+  }
 
   toggleSelection(row: Population): void {
     console.log(row)
@@ -47,12 +54,35 @@ export class PopulationManagementComponent {
     }
   }
 
+  loadData() {
+    this.populationService.getPopulation().subscribe((populations) => this.dataSource.set(populations))
+    this.dictionaryService.getGroups().subscribe((groups) => this.groups.set(groups));
+    this.dictionaryService.getCultures().subscribe((cultures) => this.cultures.set(cultures));
+    this.dictionaryService.getReligions().subscribe((religions) => this.religions.set(religions));
+    this.dictionaryService.getLocalisations().subscribe((localisations) => this.localisations.set(localisations));
+  }
+
+  getGroupName(id: number): string {
+    return this.groups().find((g) => g.id === id)?.name ?? "Brak"
+  }
+
+  getReligionName(id: number): string {
+    return this.religions().find((r) => r.id === id)?.name ?? "Brak"
+  }
+  getCultureName(id: number): string {
+    return this.cultures().find((c) => c.id === id)?.name ?? "Brak"
+  }
+
+  getLocalisationName(id: number): string {
+    return this.localisations().find((c) => c.id === id)?.name ?? "Brak"
+  }
+
   isSelected(row: Population): boolean {
     return this.selectedPopulations.includes(row);
   }
 
   isAllSelected(): boolean {
-    return this.dataSource.data.length > 0 && this.selectedPopulations.length === this.dataSource.data.length;
+    return this.dataSource.length > 0 && this.selectedPopulations.length === this.dataSource.length;
   }
 
   isSomeSelected(): boolean {
@@ -63,22 +93,20 @@ export class PopulationManagementComponent {
     if (this.isAllSelected()) {
       this.selectedPopulations = [];
     } else {
-      this.selectedPopulations = [...this.dataSource.data];
+      this.selectedPopulations = [...this.dataSource()];
     }
   }
 
-  addPopulation(): void {
-    console.log('Dodaj populację');
+  editPopulation(editedPop: Population): void {
+    this.populationService.updatePopulations([editedPop]);
+    console.log('Item edited:');
+    this.loadData();
   }
 
-  editPopulation(): void {
-    if (this.selectedPopulations.length === 1) {
-      console.log('Edytuj populację:', this.selectedPopulations[0]);
-    }
-  }
-
-  deletePopulation(): void {
-    console.log('Usuń populacje:', this.selectedPopulations);
+  deletePopulation(pops: Population[]): void {
+    this.dictionaryService.deleteCultures(pops.map(p => p.id));
+    console.log('Usuń populacje');
+    this.loadData();
   }
 
   addFilter(): void {
@@ -92,10 +120,16 @@ export class PopulationManagementComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.addPopulation();
-        console.log('New item added:', result);
+        this.populationService.addPopulation(result).subscribe({
+          next: response => {
+            this.dataSource.update(pops => [...pops, result]);
+          },
+          error: error => {
+            console.log('error');
+          }
+        })
       }
-    });
+    })
 
   }
 
@@ -108,11 +142,16 @@ export class PopulationManagementComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.editPopulation();
-        console.log('New item added:', result);
+        this.populationService.updatePopulations([result]).subscribe({
+          next: response => {
+            this.dataSource.update(pops => pops.map(pop => pop.id === result.id ? result : pop));
+          },
+          error: error => {
+            console.log('error');
+          }
+        })
       }
-    });
-
+    })
   }
 
   openDeleteDialog() {
@@ -122,13 +161,28 @@ export class PopulationManagementComponent {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          console.log('Items deleted');
-        }
-      });
+        var dudu = this.populationService.deletePopulations(this.selectedPopulations.map(pop => pop.id))
+        console.log(dudu);
+        dudu.subscribe({
+          next: response => {
+            this.dataSource.update(currentPops =>
+              currentPops.filter(pop =>
+                !this.selectedPopulations.some(selected => selected.id === pop.id)
+              )
+            );
+          },
+          error: error => {
+            console.log('error');
+          }
+
+        })
+
+
+      })
+
     }
   }
 
-
-
 }
+
+

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Resource, Culture, Religion, Group } from './model';  // Upewnij się, że masz modele
+import { Resource, Culture, Religion, Group, Localisation } from './model';  // Upewnij się, że masz modele
 
 @Injectable({
   providedIn: 'root'
 })
 export class DictionaryService {
   private apiUrl = 'https://localhost:7105/api';  // URL do API
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Zasoby (Resources)
   getResources(): Observable<Resource[]> {
@@ -92,5 +92,25 @@ export class DictionaryService {
 
   deleteGroups(ids: number[]): Observable<any> {
     return this.http.delete<void>(`${this.apiUrl}/SocialGroups`, { body: ids });
+  }
+
+  getLocalisations(): Observable<Localisation[]> {
+    return this.http.get<Localisation[]>(`${this.apiUrl}/Localisations`);
+  }
+
+  getLocalisationsById(id: number): Observable<Localisation> {
+    return this.http.get<Localisation>(`${this.apiUrl}/Localisations/${id}`);
+  }
+
+  addLocalisations(localisations: Localisation[]): Observable<Religion[]> {
+    return this.http.post<Localisation[]>(`${this.apiUrl}/Localisations`, localisations);
+  }
+
+  updateLocalisations(localisations: Localisation[]): Observable<any> {
+    return this.http.put<void>(`${this.apiUrl}/Localisations`, localisations);
+  }
+
+  deleteLocalisations(ids: number[]): Observable<any> {
+    return this.http.delete<void>(`${this.apiUrl}/Localisations`, { body: ids });
   }
 }
