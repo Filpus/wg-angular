@@ -32,6 +32,7 @@ import { DictionaryService } from '../dictionary-management/dictionary.service';
 export class AddEditPopDialogComponent {
   item: Population;
   isEditing: boolean = false;
+  count: number = 1;
 
   groups = signal<Group[]>([]);
   religions = signal<Religion[]>([]);
@@ -89,6 +90,6 @@ export class AddEditPopDialogComponent {
 
   // Zatwierdzenie i przekazanie danych
   onSubmit(): void {
-    this.dialogRef.close(this.item);
+    this.dialogRef.close({ item: this.item, count: this.count });
   }
 }

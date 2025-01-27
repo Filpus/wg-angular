@@ -119,15 +119,18 @@ export class PopulationManagementComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.populationService.addPopulation(result).subscribe({
-          next: response => {
-            this.dataSource.update(pops => [...pops, result]);
-          },
-          error: error => {
-            console.log('error');
-          }
-        })
+      const { item: newPopulation, count } = result;
+      if (newPopulation && count > 0) {
+        for (let i = 0; i < count; i++) {
+          this.populationService.addPopulation(newPopulation,).subscribe({
+            next: response => {
+              this.dataSource.update(pops => [...pops, newPopulation,]);
+            },
+            error: error => {
+              console.log('error');
+            }
+          })
+        }
       }
     })
 
@@ -141,10 +144,11 @@ export class PopulationManagementComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.populationService.updatePopulations([result]).subscribe({
+      const { item: editedPopulation, count } = result;
+      if (editedPopulation) {
+        this.populationService.updatePopulations([editedPopulation]).subscribe({
           next: response => {
-            this.dataSource.update(pops => pops.map(pop => pop.id === result.id ? result : pop));
+            this.dataSource.update(pops => pops.map(pop => pop.id === editedPopulation.id ? editedPopulation : pop));
           },
           error: error => {
             console.log('error');

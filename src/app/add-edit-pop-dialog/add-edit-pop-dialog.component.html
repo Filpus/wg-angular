@@ -34,10 +34,18 @@
   </mat-form-field>
 
 
-  <mat-form-field>
+  <mat-form-field appearance="fill">
     Zadowolenie
     <input matInput [(ngModel)]="item.happiness" type="number" required />
   </mat-form-field>
+
+  <div *ngIf="!isEditing" appearance="fill">
+    <mat-form-field>
+      Liczebność
+      <input matInput [(ngModel)]="count" type="number" required />
+    </mat-form-field>
+
+  </div>
 
 
   <mat-dialog-actions>
